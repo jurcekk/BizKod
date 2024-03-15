@@ -69,7 +69,7 @@ const InputField = ({
                 onPress={() => setShowPassword(!showPassword)}
               >
                 <FontAwesome
-                  name={showPassword ? 'eye' : 'eye-slash'}
+                  name={showPassword ? 'eye-slash' : 'eye'}
                   size={18}
                   color={theme.theme === 'dark' ? '#fafafa50' : '#0C0C0C'}
                 />
