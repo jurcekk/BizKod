@@ -2,7 +2,7 @@ import React, { createContext, useState } from 'react';
 
 const AuthContext = createContext();
 const AuthProvider = (props) => {
-  const [user, setUser] = useState(true);
+  const [user, setUser] = useState(false);
   const [userData, setUserData] = useState({
     email: 'dsadas',
     password: 'asdasd',

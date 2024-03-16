@@ -43,13 +43,13 @@ export default function ({ navigation }) {
       if (response.status === 200) {
         setUser(true);
         setUserData(response);
-        // Toast.show({
-        //   type: 'success',
-        //   position: 'top',
-        //   text1: 'Uspešno ste se prijavili!',
-        //   visibilityTime: 2000,
-        //   autoHide: true,
-        // });
+        Toast.show({
+          type: 'success',
+          position: 'top',
+          text1: 'Uspešno ste se prijavili!',
+          visibilityTime: 2000,
+          autoHide: true,
+        });
         console.log('response', response);
       } else {
         Toast.show({
