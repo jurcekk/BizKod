@@ -6,7 +6,7 @@ import Toast from 'react-native-toast-message';
 
 export default function App() {
   return (
-    <ThemeProvider theme={useColorScheme() === 'dark' ? 'dark' : 'light'}>
+    <ThemeProvider theme={useColorScheme()}>
       <AuthProvider>
         <Navigation />
       </AuthProvider>

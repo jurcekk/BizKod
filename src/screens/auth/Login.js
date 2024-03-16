@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   ScrollView,
   TouchableOpacity,
@@ -6,7 +6,6 @@ import {
   KeyboardAvoidingView,
   Image,
 } from 'react-native';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import {
   Layout,
   Text,
@@ -14,16 +13,17 @@ import {
   useTheme,
   themeColor,
 } from 'react-native-rapi-ui';
-import { FIREBASE_APP, FIREBASE_AUTH } from '../../FirebaseInit';
 import { useForm } from 'react-hook-form';
 import InputField from '../../components/InputField';
 import Toast from 'react-native-toast-message';
+import { login } from '../../data/auth';
+import { AuthContext } from '../../provider/AuthProvider';
 
 export default function ({ navigation }) {
   const { isDarkmode, setTheme } = useTheme();
-  const auth = FIREBASE_AUTH;
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(true);
+  const { setUser, setUserData } = useContext(AuthContext);
 
   const {
     control,
@@ -36,27 +36,36 @@ export default function ({ navigation }) {
     },
   });
 
-  async function login(data) {
+  const loginUser = async (data) => {
     setLoading(true);
-    await signInWithEmailAndPassword(auth, data.email, data.password)
-      .then(() => {
-        setLoading(false);
+    try {
+      const response = await login(data);
+      if (response.status === 200) {
+        setUser(true);
+        setUserData(response);
+        // Toast.show({
+        //   type: 'success',
+        //   position: 'top',
+        //   text1: 'Uspešno ste se prijavili!',
+        //   visibilityTime: 2000,
+        //   autoHide: true,
+        // });
+        console.log('response', response);
+      } else {
         Toast.show({
-          type: 'success',
+          type: 'error',
           position: 'top',
-          topOffset: 60,
-          text1: 'Uspešna prijava',
-          text2: 'Uspešno ste se prijavili na svoj nalog.',
+          text1: 'Došlo je do greške!',
+          text2: 'Pokušajte ponovo!',
+          visibilityTime: 2000,
+          autoHide: true,
         });
-      })
-      .catch(function (error) {
-        var errorCode = error.code;
-        var errorMessage = error.message;
-
-        setLoading(false);
-        alert(errorMessage);
-      });
-  }
+      }
+      setLoading(false);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   return (
     <KeyboardAvoidingView behavior='height' enabled style={{ flex: 1 }}>
@@ -140,7 +149,7 @@ export default function ({ navigation }) {
 
             <Button
               text={loading ? 'Loading' : 'Continue'}
-              onPress={handleSubmit(login)}
+              onPress={handleSubmit(loginUser)}
               style={{
                 marginTop: 20,
               }}

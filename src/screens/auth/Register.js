@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   ScrollView,
   TouchableOpacity,
@@ -6,7 +6,6 @@ import {
   KeyboardAvoidingView,
   Image,
 } from 'react-native';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
 import {
   Layout,
   Text,
@@ -14,17 +13,15 @@ import {
   useTheme,
   themeColor,
 } from 'react-native-rapi-ui';
-import { FIREBASE_AUTH, FIREBASE_DB } from '../../FirebaseInit';
-import { ref, set } from 'firebase/database';
 import Toast from 'react-native-toast-message';
 import { useForm } from 'react-hook-form';
 import InputField from '../../components/InputField';
-import * as ERROR_MESSAGES from './customErrorMessage';
+import { register } from '../../data/auth';
+import { AuthContext } from '../../provider/AuthProvider';
 
 export default function ({ navigation }) {
   const { isDarkmode, setTheme } = useTheme();
-  const auth = FIREBASE_AUTH;
-  const db = FIREBASE_DB;
+  const { setUser, setUserData } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(true);
 
@@ -39,69 +36,45 @@ export default function ({ navigation }) {
     },
   });
 
-  const errorMessage = (errorCode) => {
-    let message = '';
-
-    switch (errorCode) {
-      case 'auth/user-not-found':
-        message = ERROR_MESSAGES.USER_NOT_FOUND;
-        break;
-      case 'auth/email-already-in-use':
-        message = ERROR_MESSAGES.EMAIL_ALREADY_IN_USE;
-        break;
-      case 'auth/email-already-exists':
-        message = ERROR_MESSAGES.EMAIL_ALREADY_EXIST;
-        break;
-      case 'auth/internal-error':
-        message = ERROR_MESSAGES.INTERNAL_ERROR;
-        break;
-      case 'auth/invalid-credential':
-        message = ERROR_MESSAGES.INVALID_CREDENTIAL;
-        break;
-      case 'auth/invalid-email':
-        message = ERROR_MESSAGES.INVALID_EMAIL_FORMAT;
-        break;
-      case 'auth/invalid-password':
-        message = ERROR_MESSAGES.INVALID_PASSWORD_FORMAT;
-        break;
-      default:
-        message = ERROR_MESSAGES.DEFAULT_MESSAGE;
-        break;
-    }
-
-    return message;
-  };
-
-  async function register(data) {
+  const registerUser = async (data) => {
     setLoading(true);
-    await createUserWithEmailAndPassword(auth, data.email, data.password)
-      .then((userCredentials) => {
-        const user = userCredentials.user;
-        set(ref(db, 'users/' + user?.uid), {
-          uid: user.uid,
-          email: data.email,
-        }).then(() => {
-          setLoading(false);
-          Toast.show({
-            type: 'success',
-            text1: 'Success',
-            text2: 'Account has been created',
-          });
+
+    try {
+      const response = await register(data);
+      if (response.status === 200) {
+        Toast.show({
+          type: 'success',
+          position: 'top',
+          text1: 'Uspešno ste se registrovali!',
+          visibilityTime: 2000,
+          autoHide: true,
         });
-      })
-      .catch((error) => {
-        // Handle Errors here.
-        let errorCode = error.code;
-        let errorText = errorMessage(errorCode);
-        console.log(error);
-        setLoading(false);
+        console.log('response', response);
+        setUser(true);
+        setUserData(response.data);
+      } else {
         Toast.show({
           type: 'error',
-          text1: 'Greška',
-          text2: errorText,
+          position: 'top',
+          text1: 'Došlo je do greške!',
+          text2: response.message,
+          visibilityTime: 2000,
+          autoHide: true,
         });
+      }
+    } catch (error) {
+      console.log('error', error);
+      Toast.show({
+        type: 'error',
+        position: 'top',
+        text1: 'Došlo je do greške!',
+        text2: 'Pokušajte ponovo!',
+        visibilityTime: 4000,
+        autoHide: true,
       });
-  }
+    }
+    setLoading(false);
+  };
   return (
     <KeyboardAvoidingView behavior='height' enabled style={{ flex: 1 }}>
       <Layout>
@@ -150,16 +123,16 @@ export default function ({ navigation }) {
                 marginBottom: 5,
               }}
             >
-              Username
+              FirstName
             </Text>
             <InputField
               control={control}
               errors={errors}
-              label='Username'
-              name='username'
+              label='First Name'
+              name='firstName'
               defaultValue=''
               rules={{
-                required: 'Username je obavezan',
+                required: 'FirstName je obavezan',
               }}
             />
             <Text
@@ -201,7 +174,7 @@ export default function ({ navigation }) {
             />
             <Button
               text={loading ? 'Loading' : 'Create an account'}
-              onPress={handleSubmit(register)}
+              onPress={handleSubmit(registerUser)}
               style={{
                 marginTop: 20,
               }}

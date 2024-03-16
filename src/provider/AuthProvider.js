@@ -1,32 +1,20 @@
-import React, { createContext, useState, useEffect } from 'react';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import React, { createContext, useState } from 'react';
 
 const AuthContext = createContext();
 const AuthProvider = (props) => {
-  const auth = getAuth();
-  // user null = loading
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    checkLogin();
-  }, []);
-
-  function checkLogin() {
-    onAuthStateChanged(auth, (u) => {
-      if (u) {
-        setUser(true);
-        // getUserData();
-      } else {
-        setUser(false);
-        // setUserData(null);
-      }
-    });
-  }
+  const [user, setUser] = useState(true);
+  const [userData, setUserData] = useState({
+    email: 'dsadas',
+    password: 'asdasd',
+  });
 
   return (
     <AuthContext.Provider
       value={{
         user,
+        setUser,
+        userData,
+        setUserData,
       }}
     >
       {props.children}

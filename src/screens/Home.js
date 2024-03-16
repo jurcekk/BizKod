@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Linking } from 'react-native';
-import { getAuth, signOut } from 'firebase/auth';
 import {
   Layout,
   Button,
@@ -12,10 +11,11 @@ import {
   themeColor,
 } from 'react-native-rapi-ui';
 import { Ionicons } from '@expo/vector-icons';
+import { AuthContext } from '../provider/AuthProvider';
 
 export default function ({ navigation }) {
   const { isDarkmode, setTheme } = useTheme();
-  const auth = getAuth();
+  const { setUser } = useContext(AuthContext);
 
   return (
     <Layout>
@@ -58,7 +58,16 @@ export default function ({ navigation }) {
               status='danger'
               text='Logout'
               onPress={() => {
-                signOut(auth);
+                setUser(false);
+              }}
+              style={{
+                marginTop: 10,
+              }}
+            />
+            <Button
+              text='Go to second screen'
+              onPress={() => {
+                navigation.navigate('AdScreen');
               }}
               style={{
                 marginTop: 10,

@@ -21,8 +21,11 @@ const InputField = ({
   onFocus,
   showPassword,
   setShowPassword,
+  editable = true,
+  onPressIn,
 }) => {
   const theme = useTheme();
+  console.log('theme', theme);
 
   return (
     <Controller
@@ -37,7 +40,7 @@ const InputField = ({
                     { borderWidth: 1, borderColor: 'red', marginVertical: 4 },
                   ]
                 : [styles.input, { marginBottom: 16 }],
-              theme.theme === 'dark'
+              theme.isDarkmode
                 ? [styles.input, styles.dark]
                 : [styles.input, styles.light])
             }
@@ -46,14 +49,10 @@ const InputField = ({
               name={name}
               style={[
                 { flex: 1 },
-                theme.theme === 'dark'
-                  ? { color: '#fafafa' }
-                  : { color: '#0C0C0C' },
+                theme.isDarkmode ? { color: '#fafafa' } : { color: '#0C0C0C' },
               ]}
               placeholder={label}
-              placeholderTextColor={
-                theme.theme === 'dark' ? '#fafafa50' : '#6D6D78'
-              }
+              placeholderTextColor={theme.isDarkmode ? '#fafafa50' : '#6D6D78'}
               keyboardType={type}
               onChangeText={onChange}
               value={value}
@@ -61,6 +60,8 @@ const InputField = ({
               onBlur={onBlur}
               onFocus={onFocus}
               autoCapitalize='none'
+              editable={editable}
+              onPressIn={onPressIn}
             />
 
             {name === 'password' ? (
