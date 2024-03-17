@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import {
@@ -13,9 +13,20 @@ import {
 } from 'react-native-rapi-ui';
 import { Image } from 'expo-image';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { JaccardSimilarity } from '../data/JaccardSimilarity';
+import { AuthContext } from '../provider/AuthProvider';
 
-const OtherProfile = ({ navigation }) => {
+const OtherProfile = (props) => {
+  const navigation = useNavigation();
   const { isDarkmode, setTheme } = useTheme();
+  const {userData} = useContext(AuthContext);
+  const item = props.route.params.item;
+
+  console.log("USER", JSON.stringify(item.interestCategories, null, 2));
+
+   const rating = JaccardSimilarity(userData?._doc?.interestCategories, item?.interestCategories);
+   console.log(rating);
   return (
     <Layout>
     <ScrollView style={styles.container}>
@@ -46,14 +57,14 @@ const OtherProfile = ({ navigation }) => {
           style={styles.profileImage}
           source={require('../../assets/images/forget.png')} // Replace with your local image
         />
-        <Text style={styles.name}>Username</Text>
+        <Text style={styles.name}>{item?.firstName} {item?.lastName}</Text>
         <View style={styles.rating}>
-          <FontAwesome name='star' size={20} color='orange' />
-          <Text style={styles.ratingText}>4,5/5</Text>
+          {rating > 0.6 && <FontAwesome name='star' size={20} color='orange' />}
+          <Text style={styles.ratingText}>{rating > 0.8 ? "Super kompatibilni" : rating > 0.6 && rating < 0.8 ? "Kompatibilni" : rating > 0.3 && rating < 0.6 ? "Manje kompatibilni" : "Ne kompatibilni" }</Text>
         </View>
 
-        <Text style={styles.email}>email@email.com</Text>
-        <Text style={styles.phone}>+3817223626</Text>
+        <Text style={styles.email}>{item?.email}</Text>
+        <Text style={styles.phone}>{item?.phone}</Text>
         <View style={styles.course}>
           <Text style={[styles.courseText, {color: isDarkmode ? "white" : "white"}]}>Oblast poslovanja</Text>
           <Text style={[styles.courseText, {color: isDarkmode ? "white" : "white"}]}>Informacione Tehnologije</Text>

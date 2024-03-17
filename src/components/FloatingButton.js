@@ -1,12 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Alert} from 'react-native';
 import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
 import { Text } from 'react-native-rapi-ui';
 import { useNavigation } from '@react-navigation/native';
+
 
 const FloatingButton = () => {
     const navigation = useNavigation();
@@ -28,7 +29,17 @@ const FloatingButton = () => {
   return (
     <View style={styles.container}>
       <Animated.View style={[styles.fabContainer, firstButtonStyle]}>
-        <TouchableOpacity style={styles.fab}>
+        <TouchableOpacity style={styles.fab} onPress={() => {
+            setIsOpen(!isOpen);
+            Alert.alert('Da li se slažete?', 'Da se vaši podaci prikazuju drugim korisnicima', [
+                {
+                  text: 'Ne',
+                  onPress: () => console.log('Cancel Pressed'),
+                  style: 'cancel',
+                },
+                {text: 'Da', onPress: () => console.log('OK Pressed')},
+              ]);
+        }}>
           <Ionicons name='accessibility' size={24} color='white' />
         </TouchableOpacity>
       </Animated.View>

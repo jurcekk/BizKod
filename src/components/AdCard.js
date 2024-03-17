@@ -15,9 +15,16 @@ const AdCard = ({ item, index }) => {
         borderRadius: 10,
       }}
       onPress={() => {
-        navigation.navigate("AdScreen", {
-          item,
-        });
+        if(item?.user?.firstName){
+            navigation.navigate('AdScreen', {
+                item
+            });
+        } {
+            navigation.navigate('OtherProfile', {
+                item
+            });
+        }
+        
       }}
     >
       <Image
@@ -59,7 +66,7 @@ const AdCard = ({ item, index }) => {
               color: themeColor.dark,
             }}
           >
-            {item?.user?.firstName} {item?.user?.lastName}
+            {item?.user?.firstName ? item?.user?.firstName : item?.firstName} {item?.user?.lastName ? item?.user?.lastName : item?.lastName}
           </Text>
           <View
             style={{
@@ -73,7 +80,7 @@ const AdCard = ({ item, index }) => {
                 color: "grey",
               }}
             >
-              {item?.details?.rooms} sobe
+              {item?.details?.rooms ? "sobe" : item?.address}
             </Text>
             <Text
               style={{
@@ -81,7 +88,7 @@ const AdCard = ({ item, index }) => {
                 color: "grey",
               }}
             >
-              {item?.details?.floor} sprat
+              {item?.details?.floor ? "sprat" : ""}  
             </Text>
           </View>
         </View>
@@ -100,7 +107,7 @@ const AdCard = ({ item, index }) => {
               color: themeColor.dark,
             }}
           >
-            €{item?.price}
+            {item?.price ? "$" + item?.price  : item?.profession === 'unemployed' ? "Nezaposlen" : item?.profession}
           </Text>
           <Text
             style={{
@@ -108,7 +115,7 @@ const AdCard = ({ item, index }) => {
               color: "grey",
             }}
           >
-            mesečno
+            {item?.price ? "mesečno" : item?.gender === 'female' ? "Žensko" : "Muško"}
           </Text>
         </View>
       </View>

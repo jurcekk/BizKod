@@ -31,7 +31,7 @@ export default function ({ navigation }) {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      email: 'jurcekdavid@gmail.com',
+      email: 'andrej@gmail.com',
       password: 'David01%',
     },
   });
@@ -154,25 +154,6 @@ export default function ({ navigation }) {
               }}
               disabled={loading}
             />
-
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginTop: 20,
-                justifyContent: 'flex-end',
-              }}
-            >
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate('ForgetPassword');
-                }}
-              >
-                <Text size='md' fontWeight='bold'>
-                  Forget password?
-                </Text>
-              </TouchableOpacity>
-            </View>
 
             <View
               style={{

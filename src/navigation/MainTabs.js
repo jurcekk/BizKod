@@ -36,7 +36,7 @@ const MainTabs = () => {
         }}
       />
 
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name='About'
         component={About}
         options={{
@@ -47,7 +47,7 @@ const MainTabs = () => {
             <TabBarIcon focused={focused} icon={'information'} />
           ),
         }}
-      />
+      /> */}
       <Tabs.Screen
         name='Profile'
         component={Profile}
