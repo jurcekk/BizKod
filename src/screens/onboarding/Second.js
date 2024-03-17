@@ -33,7 +33,6 @@ const Second = (props) => {
       id,
     };
     const response = await updateUser(obj);
-    console.log("response", response);
     if (response.message === "User info are updated!") {
       navigation.navigate("MainTabs");
     }

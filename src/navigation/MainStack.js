@@ -7,7 +7,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import First from "../screens/onboarding/First";
 import Second from "../screens/onboarding/Second";
 import AdScreen from "../screens/AdSceen";
-//Add new ad
+import AddNewAd from "../screens/AddNewAd";
 const MainStack = createNativeStackNavigator();
 const Main = () => {
 
@@ -25,6 +25,7 @@ const Main = () => {
       <MainStack.Screen name="AdScreen" component={AdScreen} />
       <MainStack.Screen name="First" component={First} />
       <MainStack.Screen name="Second" component={Second} />
+      <MainStack.Screen name="AddNewAd" component={Second} />
     </MainStack.Navigator>
   );
 };

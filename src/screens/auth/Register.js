@@ -49,7 +49,6 @@ export default function ({ navigation }) {
           autoHide: true,
         });
         setUser(true);
-        console.log("eo me");
         setUserData(response?.item);
         navigation.navigate("First");
       } else {

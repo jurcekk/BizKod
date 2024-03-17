@@ -1,101 +1,123 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from "react";
 import {
   View,
-  Linking,
   TouchableOpacity,
   FlatList,
   StyleSheet,
   ScrollView,
-} from 'react-native';
+} from "react-native";
 import {
   Layout,
-  Button,
   Text,
   TopNav,
   Section,
   SectionContent,
   useTheme,
   themeColor,
-} from 'react-native-rapi-ui';
-import { Ionicons } from '@expo/vector-icons';
-import { AuthContext } from '../provider/AuthProvider';
-import { Image } from 'expo-image';
-import AdCard from '../components/AdCard';
-import FloatingButton from '../components/FloatingButton';
+} from "react-native-rapi-ui";
+import { Ionicons } from "@expo/vector-icons";
+import AdCard from "../components/AdCard";
+import FloatingButton from "../components/FloatingButton";
 
 export default function ({ navigation }) {
   const { isDarkmode, setTheme } = useTheme();
-  const [activeList, setActiveList] = useState('first');
-  const [selectedCategory, setSelectedCategory] = useState('Sve');
+  const [activeList, setActiveList] = useState("first");
+  const [selectedCategory, setSelectedCategory] = useState("Sve");
   const [ads, setAds] = useState([]);
-
-  const { setUser } = useContext(AuthContext);
+  const [adsMale, setAdsMale] = useState([]);
+  const [adsFemale, setAdsFemale] = useState([]);
+  const [adsPriceTop, setAdsPriceTop] = useState([]);
+  const [adsPriceBottom, setAdsPriceBottom] = useState([]);
 
   const getAds = async () => {
-    console.log('usao');
     const response = await fetch(
-      process.env.EXPO_PUBLIC_API_URL + '/getAllAdvertisment'
+      process.env.EXPO_PUBLIC_API_URL + "/getAllAdvertisment"
     );
-
     const data = await response.json();
-    console.log(data.items);
     setAds(data.items);
-  };
 
+    //male
+    let filteredMale = [];
+    filteredMale = data?.items.filter((elem) => elem?.user?.gender === "male");
+    setAdsMale(filteredMale);
+    //female
+    let filteredFemale = [];
+    filteredFemale = data?.items.filter(
+      (elem) => elem?.user?.gender === "female"
+    );
+    setAdsFemale(filteredFemale);
+  };
+  const filterFunction = (category, index) => {
+    setSelectedCategory(category);
+    let filteredAds = [];
+    if (index === 1) {
+      filteredAds = ads.filter((elem) => elem?.user?.gender === "male");
+    } else if (index === 2) {
+      filteredAds = ads.filter((elem) => elem?.user?.gender === "female");
+    }
+    setAds(filteredAds);
+    navigation.navigation("MainTab", { type: "filter", category: category });
+  };
   useEffect(() => {
     getAds();
   }, []);
 
-  const categories = ['Sve', 'Muški', 'Ženski', "Cena Rastucam", "Cena Opadajuce", 'Najnoviji', 'Najstariji'];
+  const categories = [
+    "Sve",
+    "Muškarci",
+    "Žene",
+    "Cena rastuca",
+    "Cena opadajuce",
+  ];
 
   return (
     <Layout>
       <TopNav
-        middleContent='Home'
+        middleContent="Home"
         rightContent={
           <Ionicons
-            name={isDarkmode ? 'sunny' : 'moon'}
+            name={isDarkmode ? "sunny" : "moon"}
             size={20}
             color={isDarkmode ? themeColor.white100 : themeColor.dark}
           />
         }
         rightAction={() => {
           if (isDarkmode) {
-            setTheme('light');
+            setTheme("light");
           } else {
-            setTheme('dark');
+            setTheme("dark");
           }
         }}
       />
 
       <View
         style={{
-          justifyContent: 'space-between',
-          flexDirection: 'row',
+          justifyContent: "space-between",
+          flexDirection: "row",
           marginTop: 10,
-          backgroundColor: 'white',
+          backgroundColor: "white",
           borderRadius: 50,
           marginHorizontal: 20,
         }}
       >
         <TouchableOpacity
-          onPress={() => setActiveList('first')}
+          onPress={() => setActiveList("first")}
           style={{
             flex: 1,
             flexGrow: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
+            justifyContent: "center",
+            alignItems: "center",
             borderTopStartRadius: 50,
             borderBottomStartRadius: 50,
             borderRightWidth: 2,
             padding: 20,
             backgroundColor:
-              activeList === 'first' ? themeColor.primary : 'white',
+              activeList === "first" ? themeColor.primary : "white",
           }}
         >
           <Text
             style={{
-              color: activeList !== 'first' ? themeColor.black500 : 'white',
+              color: activeList !== "first" ? themeColor.black500 : "white",
             }}
           >
             Peronalizovani
@@ -103,22 +125,22 @@ export default function ({ navigation }) {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => setActiveList('second')}
+          onPress={() => setActiveList("second")}
           style={{
             flex: 1,
             flexGrow: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
+            justifyContent: "center",
+            alignItems: "center",
             borderTopEndRadius: 50,
             borderBottomEndRadius: 50,
             padding: 20,
             backgroundColor:
-              activeList === 'second' ? themeColor.primary : 'white',
+              activeList === "second" ? themeColor.primary : "white",
           }}
         >
           <Text
             style={{
-              color: activeList !== 'second' ? themeColor.black500 : 'white',
+              color: activeList !== "second" ? themeColor.black500 : "white",
             }}
           >
             Svi oglasi
@@ -134,10 +156,15 @@ export default function ({ navigation }) {
         }}
       >
         <SectionContent>
-          <ScrollView style={styles.buttonContainer} contentContainerStyle={{
-            alignItems: 'center',
-          }} horizontal showsHorizontalScrollIndicator={false}>
-            {categories.map((category) => (
+          <ScrollView
+            style={styles.buttonContainer}
+            contentContainerStyle={{
+              alignItems: "center",
+            }}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+          >
+            {categories.map((category, index) => (
               <TouchableOpacity
                 key={category}
                 style={[
@@ -147,11 +174,11 @@ export default function ({ navigation }) {
                     backgroundColor:
                       selectedCategory === category
                         ? themeColor.primary
-                        : 'white',
+                        : "white",
                     borderColor:
                       selectedCategory === category
                         ? themeColor.primary
-                        : 'black',
+                        : "black",
                   },
                 ]}
                 onPress={() => setSelectedCategory(category)}
@@ -159,7 +186,7 @@ export default function ({ navigation }) {
                 <Text
                   style={{
                     fontSize: 16,
-                    color: selectedCategory === category ? 'white' : 'black',
+                    color: selectedCategory === category ? "white" : "black",
                   }}
                 >
                   {category}
@@ -167,35 +194,39 @@ export default function ({ navigation }) {
               </TouchableOpacity>
             ))}
           </ScrollView>
-          {ads.length > 0 ? (
-          <FlatList
-            data={ads}
-            keyExtractor={(item) => item._id}
-            showsVerticalScrollIndicator={false}
-            style={{
-              marginTop: 20,
-            }}
-            contentContainerStyle={{
-              flexGrow: 1,
-              paddingBottom: 200,
-            }}
-            renderItem={({ item }) => {
-              console.log(item)
-              return <AdCard  item={item} />;
-            }}
-          />
-          ) : 
-          <Text
-            style={{
-              textAlign: 'center',
-              marginVertical: 50
-            }}
-            size='h3'
-          >
-            Nema pronađenih oglasa
-          </Text>
-          }
-
+          {ads?.length > 0 ? (
+            <FlatList
+              data={
+                selectedCategory === "Muškarci"
+                  ? adsMale
+                  : selectedCategory === "Žene"
+                  ? adsFemale
+                  : ads
+              }
+              keyExtractor={(item) => item._id}
+              showsVerticalScrollIndicator={false}
+              style={{
+                marginTop: 20,
+              }}
+              contentContainerStyle={{
+                flexGrow: 1,
+                paddingBottom: 200,
+              }}
+              renderItem={({ item, index }) => {
+                return <AdCard item={item} index={index} />;
+              }}
+            />
+          ) : (
+            <Text
+              style={{
+                textAlign: "center",
+                marginVertical: 50,
+              }}
+              size="h3"
+            >
+              Nema pronađenih oglasa
+            </Text>
+          )}
         </SectionContent>
       </Section>
       <FloatingButton />
@@ -205,8 +236,8 @@ export default function ({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 10,
   },
   title: {
@@ -214,7 +245,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   buttonContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   button: {
     marginRight: 5,
@@ -223,12 +254,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   selectedButton: {
-    borderColor: 'blue',
+    borderColor: "blue",
   },
   buttonText: {
     fontSize: 16,
   },
   selectedButtonText: {
-    color: 'white',
+    color: "white",
   },
 });

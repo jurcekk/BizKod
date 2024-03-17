@@ -39,7 +39,6 @@ const AddNewAd = () => {
       });
 
       const onSubmit = async (data) => {
-        console.log('data', data);
       }
     return(
         <Layout >

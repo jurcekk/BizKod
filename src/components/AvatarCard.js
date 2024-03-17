@@ -37,9 +37,7 @@ const AvatarCard = ({ user }) => {
         >
             
       <Avatar
-        source={{
-          uri: 'https://i.pravatar.cc/100',
-        }}
+        source={require("../../assets/man3.png")}
         size='lg'
         shape='round'
        
@@ -67,7 +65,6 @@ const AvatarCard = ({ user }) => {
         onPress={() => {
           // Open mobile with phone number
 
-          console.log('Contact');
         }}
         style={{
           marginLeft: 'auto',
