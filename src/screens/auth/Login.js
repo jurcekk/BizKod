@@ -40,7 +40,7 @@ export default function ({ navigation }) {
     setLoading(true);
     try {
       const response = await login(data);
-      if (response.status === 200) {
+      if (response?.status === 200) {
         setUser(true);
         setUserData(response);
         Toast.show({
@@ -50,7 +50,6 @@ export default function ({ navigation }) {
           visibilityTime: 2000,
           autoHide: true,
         });
-        console.log('response', response);
       } else {
         Toast.show({
           type: 'error',

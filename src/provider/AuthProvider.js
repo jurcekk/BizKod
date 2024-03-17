@@ -4,8 +4,7 @@ const AuthContext = createContext();
 const AuthProvider = (props) => {
   const [user, setUser] = useState(false);
   const [userData, setUserData] = useState({
-    email: 'dsadas',
-    password: 'asdasd',
+   
   });
 
   return (

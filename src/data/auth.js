@@ -1,7 +1,6 @@
 const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 export const register = (formData) => {
-  console.log('forma za reg', formData);
   return fetch(`${apiUrl}/register`, {
     method: 'POST',
     mode: 'cors',

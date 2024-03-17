@@ -25,7 +25,6 @@ const InputField = ({
   onPressIn,
 }) => {
   const theme = useTheme();
-  console.log('theme', theme);
 
   return (
     <Controller

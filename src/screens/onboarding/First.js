@@ -1,13 +1,13 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from "react";
 import {
   View,
   KeyboardAvoidingView,
   TouchableOpacity,
   Platform,
   StyleSheet,
-} from 'react-native';
-import { useForm } from 'react-hook-form';
-import { AuthContext } from '../../provider/AuthProvider';
+} from "react-native";
+import { useForm } from "react-hook-form";
+import { AuthContext } from "../../provider/AuthProvider";
 import {
   Layout,
   Button,
@@ -19,13 +19,12 @@ import {
   themeColor,
   Picker,
   RadioButton,
-} from 'react-native-rapi-ui';
-import InputField from '../../components/InputField';
-import * as Location from 'expo-location';
-import { FontAwesome5 } from '@expo/vector-icons';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { oblastiObrazovanja } from '../../data/oblastiObrazovanja';
-
+} from "react-native-rapi-ui";
+import InputField from "../../components/InputField";
+import * as Location from "expo-location";
+import { FontAwesome5 } from "@expo/vector-icons";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { getAllAreas } from "../../data/getAllAreas";
 const First = ({ navigation }) => {
   const {
     control,
@@ -36,37 +35,39 @@ const First = ({ navigation }) => {
     clearErrors,
   } = useForm({
     defaultValues: {
-      firstName: '',
-      lastName: '',
-      gender: 'male',
-      location: '',
-      dateOfBirth: '',
-      job: 'nezaposlen',
-      jobRole: '',
-      studentField: '',
+      firstName: "",
+      lastName: "",
+      number: "",
+      gender: "male",
+      location: "",
+      dateOfBirth: "",
+      job: "nezaposlen",
+      jobRole: "",
+      studentField: "",
     },
   });
   const [location, setLocation] = useState(null);
-  const [gender, setGender] = useState('male');
-  const [job, setJob] = useState('nezaposlen');
+  const [area, setAreas] = useState(null);
+  const [gender, setGender] = useState("male");
+  const [job, setJob] = useState("nezaposlen");
   const [jobRole, setJobRole] = useState(null);
   const [studentField, setStudentField] = useState(null);
   const [date, setDate] = useState(new Date());
   const [showDate, setShowDate] = useState(false);
   const { isDarkmode, setTheme } = useTheme();
-
+  RadioButton;
   useEffect(() => {
     getLocation();
+    getAreas();
   }, []);
 
   const showMode = () => {
     setShowDate(true);
   };
-
   const getLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      setErrorMsg('Permission to access location was denied');
+    if (status !== "granted") {
+      setErrorMsg("Permission to access location was denied");
       return;
     }
 
@@ -78,13 +79,21 @@ const First = ({ navigation }) => {
     });
 
     setLocation(regionName[0].city);
-    setValue('location', regionName[0].city);
+    setValue("location", regionName[0].city);
+  };
+  const getAreas = async () => {
+    const response = await getAllAreas();
+    let array = [];
+    response?.items.forEach((el) => {
+      array.push({ label: el?.name, value: el?.name });
+    });
+    setAreas(array);
   };
 
   return (
-    <KeyboardAvoidingView behavior='height' enabled style={{ flex: 1 }}>
+    <KeyboardAvoidingView behavior="height" enabled style={{ flex: 1 }}>
       <Layout>
-        <TopNav middleContent='Dodatni podaci o korisniku' />
+        <TopNav middleContent="Dodatni podaci o korisniku" />
         <View
           style={{
             flex: 1,
@@ -95,11 +104,11 @@ const First = ({ navigation }) => {
             <InputField
               control={control}
               errors={errors}
-              label='Ime'
-              name='firstName'
-              defaultValue=''
+              label="Ime"
+              name="firstName"
+              defaultValue=""
               rules={{
-                required: 'Lokacija je required',
+                required: "Lokacija je required",
               }}
             />
 
@@ -107,58 +116,72 @@ const First = ({ navigation }) => {
             <InputField
               control={control}
               errors={errors}
-              label='Prezime'
-              name='lastName'
-              defaultValue=''
+              label="Prezime"
+              name="lastName"
+              defaultValue=""
               rules={{
-                required: 'Lokacija je required',
+                required: "Lokacija je required",
               }}
+            />
+            <Text style={{ marginTop: 15, marginBottom: 5 }}>
+              Broj telefona
+            </Text>
+            <InputField
+              control={control}
+              errors={errors}
+              label="Broj telefona"
+              name="number"
+              defaultValue=""
+              rules={{
+                required: "Lokacija je required",
+              }}
+              type="numeric"
             />
             <View
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
+                flexDirection: "row",
+                alignItems: "center",
                 marginTop: 25,
                 gap: 30,
               }}
             >
               <View
                 style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
+                  flexDirection: "row",
+                  alignItems: "center",
                 }}
               >
                 <RadioButton
-                  value={gender === 'male' ? true : false}
+                  value={gender === "male" ? true : false}
                   onValueChange={(val) => {
                     if (val) {
-                      setGender('male');
-                      setValue('gender', 'male');
+                      setGender("male");
+                      setValue("gender", "male");
                     }
                   }}
                   checkedColor={themeColor.primary}
                 />
-                <Text size='md' style={{ marginLeft: 10, color: 'gray' }}>
+                <Text size="md" style={{ marginLeft: 10, color: "gray" }}>
                   Muško
                 </Text>
               </View>
               <View
                 style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
+                  flexDirection: "row",
+                  alignItems: "center",
                 }}
               >
                 <RadioButton
-                  value={gender === 'female' ? true : false}
+                  value={gender === "female" ? true : false}
                   onValueChange={(val) => {
                     if (val) {
-                      setGender('female');
-                      setValue('gender', 'female');
+                      setGender("female");
+                      setValue("gender", "female");
                     }
                   }}
                   checkedColor={themeColor.primary}
                 />
-                <Text size='md' style={{ marginLeft: 10, color: 'gray' }}>
+                <Text size="md" style={{ marginLeft: 10, color: "gray" }}>
                   Žensko
                 </Text>
               </View>
@@ -168,10 +191,10 @@ const First = ({ navigation }) => {
               style={{
                 marginTop: 10,
                 marginBottom: 5,
-                justifyContent: 'space-between',
-                alignItems: 'flex-end',
+                justifyContent: "space-between",
+                alignItems: "flex-end",
                 flexShrink: 1,
-                flexDirection: 'row',
+                flexDirection: "row",
               }}
               padding={0}
             >
@@ -186,11 +209,11 @@ const First = ({ navigation }) => {
                 <InputField
                   control={control}
                   errors={errors}
-                  label='Lokacija'
-                  name='location'
-                  defaultValue=''
+                  label="Lokacija"
+                  name="location"
+                  defaultValue=""
                   rules={{
-                    required: 'Lokacija je required',
+                    required: "Lokacija je required",
                   }}
                 />
               </View>
@@ -202,12 +225,12 @@ const First = ({ navigation }) => {
                   backgroundColor: themeColor.primary,
                   padding: 10,
                   borderRadius: 10,
-                  justifyContent: 'center',
-                  alignItems: 'center',
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
               >
                 <FontAwesome5
-                  name='location-arrow'
+                  name="location-arrow"
                   size={20}
                   color={themeColor.white100}
                 />
@@ -226,11 +249,11 @@ const First = ({ navigation }) => {
               <InputField
                 control={control}
                 errors={errors}
-                label='Datum rođenja'
-                name='dateOfBirth'
-                defaultValue=''
+                label="Datum rođenja"
+                name="dateOfBirth"
+                defaultValue=""
                 rules={{
-                  required: 'Datum rođenja je obavezan',
+                  required: "Datum rođenja je obavezan",
                 }}
                 editable={false}
                 onPressIn={showMode}
@@ -238,95 +261,95 @@ const First = ({ navigation }) => {
             </TouchableOpacity>
             {showDate && (
               <DateTimePicker
-                testID='dateTimePicker'
+                testID="dateTimePicker"
                 value={date}
-                mode='date'
+                mode="date"
                 is24Hour={true}
                 onChange={(event, selectedDate) => {
                   setShowDate(false);
                   setValue(
-                    'dateOfBirth',
-                    selectedDate.toLocaleDateString('en-GB')
+                    "dateOfBirth",
+                    selectedDate.toLocaleDateString("en-GB")
                   );
                   setDate(selectedDate);
                 }}
                 themeVariant={
-                  isDarkmode && Platform.OS === 'ios' ? 'dark' : 'light'
+                  isDarkmode && Platform.OS === "ios" ? "dark" : "light"
                 }
               />
             )}
 
             <View
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
+                flexDirection: "row",
+                alignItems: "center",
                 marginTop: 20,
                 gap: 30,
               }}
             >
               <View
                 style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
+                  flexDirection: "row",
+                  alignItems: "center",
                 }}
               >
                 <RadioButton
-                  value={job === 'zaposlen' ? true : false}
+                  value={job === "zaposlen" ? true : false}
                   onValueChange={(val) => {
                     if (val) {
-                      setJob('zaposlen');
-                      setValue('job', 'zaposlen');
+                      setJob("zaposlen");
+                      setValue("job", "zaposlen");
                     }
                   }}
                   checkedColor={themeColor.primary}
                 />
-                <Text size='md' style={{ marginLeft: 10, color: 'gray' }}>
+                <Text size="md" style={{ marginLeft: 10, color: "gray" }}>
                   Zaposlen
                 </Text>
               </View>
               <View
                 style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
+                  flexDirection: "row",
+                  alignItems: "center",
                 }}
               >
                 <RadioButton
-                  value={job === 'student' ? true : false}
+                  value={job === "student" ? true : false}
                   onValueChange={(val) => {
                     if (val) {
-                      setJob('student');
-                      setValue('job', 'student');
+                      setJob("student");
+                      setValue("job", "student");
                     }
                   }}
                   checkedColor={themeColor.primary}
                 />
-                <Text size='md' style={{ marginLeft: 10, color: 'gray' }}>
+                <Text size="md" style={{ marginLeft: 10, color: "gray" }}>
                   Student
                 </Text>
               </View>
               <View
                 style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
+                  flexDirection: "row",
+                  alignItems: "center",
                 }}
               >
                 <RadioButton
-                  value={job === 'nezaposlen' ? true : false}
+                  value={job === "nezaposlen" ? true : false}
                   onValueChange={(val) => {
                     if (val) {
-                      setJob('nezaposlen');
-                      setValue('job', 'nezaposlen');
+                      setJob("nezaposlen");
+                      setValue("job", "nezaposlen");
                     }
                   }}
                   checkedColor={themeColor.primary}
                 />
-                <Text size='md' style={{ marginLeft: 10, color: 'gray' }}>
+                <Text size="md" style={{ marginLeft: 10, color: "gray" }}>
                   Nezaposlen
                 </Text>
               </View>
             </View>
 
-            {job === 'zaposlen' && (
+            {job === "zaposlen" && (
               <View
                 style={{
                   marginTop: 15,
@@ -336,10 +359,10 @@ const First = ({ navigation }) => {
                 <View
                   style={[
                     {
-                      flexDirection: 'row',
+                      flexDirection: "row",
                       borderRadius: 10,
                       height: 50,
-                      shadowColor: 'black',
+                      shadowColor: "black",
                       shadowOpacity: 0.3,
                       shadowRadius: 2,
                       shadowOffset: {
@@ -347,23 +370,23 @@ const First = ({ navigation }) => {
                         width: 0,
                       },
                       elevation: 2,
-                      backgroundColor: '#F2F2F2',
+                      backgroundColor: "#F2F2F2",
                       paddingLeft: 0,
                     },
                     isDarkmode ? styles.dark : styles.light,
                   ]}
                 >
                   <Picker
-                    items={oblastiObrazovanja}
+                    items={area}
                     value={jobRole}
-                    placeholder='Izaberite oblast poslovanja'
+                    placeholder="Izaberite oblast poslovanja"
                     onValueChange={(val) => {
-                      setValue('jobRole', val);
-                      clearErrors('jobRole');
+                      setValue("jobRole", val);
+                      clearErrors("jobRole");
                       setJobRole(val);
                     }}
                     borderWidth={0}
-                    backgroundColor={isDarkmode ? '#282D33' : '#fafafa'}
+                    backgroundColor={isDarkmode ? "#282D33" : "#fafafa"}
                   />
                 </View>
               </View>
@@ -371,16 +394,16 @@ const First = ({ navigation }) => {
             {errors.jobRole && (
               <Text
                 style={{
-                  color: 'red',
+                  color: "red",
                   fontSize: 12,
-                  alignSelf: 'flex-start',
+                  alignSelf: "flex-start",
                 }}
               >
                 {errors.jobRole.message}
               </Text>
             )}
 
-            {job === 'student' && (
+            {job === "student" && (
               <View
                 style={{
                   marginTop: 15,
@@ -390,10 +413,10 @@ const First = ({ navigation }) => {
                 <View
                   style={[
                     {
-                      flexDirection: 'row',
+                      flexDirection: "row",
                       borderRadius: 10,
                       height: 50,
-                      shadowColor: 'black',
+                      shadowColor: "black",
                       shadowOpacity: 0.3,
                       shadowRadius: 2,
                       shadowOffset: {
@@ -401,23 +424,23 @@ const First = ({ navigation }) => {
                         width: 0,
                       },
                       elevation: 2,
-                      backgroundColor: '#F2F2F2',
+                      backgroundColor: "#F2F2F2",
                       paddingLeft: 0,
                     },
                     isDarkmode ? styles.dark : styles.light,
                   ]}
                 >
                   <Picker
-                    items={oblastiObrazovanja}
+                    items={area}
                     value={studentField}
-                    placeholder='Izaberite oblast studija'
+                    placeholder="Izaberite oblast studija"
                     onValueChange={(val) => {
-                      setValue('studentField', val);
-                      clearErrors('studentField');
+                      setValue("studentField", val);
+                      clearErrors("studentField");
                       setStudentField(val);
                     }}
                     borderWidth={0}
-                    backgroundColor={isDarkmode ? '#282D33' : '#fafafa'}
+                    backgroundColor={isDarkmode ? "#282D33" : "#fafafa"}
                   />
                 </View>
               </View>
@@ -425,9 +448,9 @@ const First = ({ navigation }) => {
             {errors.studentField && (
               <Text
                 style={{
-                  color: 'red',
+                  color: "red",
                   fontSize: 12,
-                  alignSelf: 'flex-start',
+                  alignSelf: "flex-start",
                 }}
               >
                 {errors.studentField.message}
@@ -437,25 +460,24 @@ const First = ({ navigation }) => {
 
           <SectionContent>
             <Button
-              text='Dalje'
+              text="Dalje"
               onPress={handleSubmit((data) => {
-                if (jobRole === null && job === 'zaposlen') {
-                  setError('jobRole', {
-                    type: 'manual',
-                    message: 'Izaberite oblast poslovanja',
+                if (jobRole === null && job === "zaposlen") {
+                  setError("jobRole", {
+                    type: "manual",
+                    message: "Izaberite oblast poslovanja",
                   });
-                } else if (studentField === null && job === 'student') {
-                  setError('studentField', {
-                    type: 'manual',
-                    message: 'Izaberite oblast oblast studija',
+                } else if (studentField === null && job === "student") {
+                  setError("studentField", {
+                    type: "manual",
+                    message: "Izaberite oblast oblast studija",
                   });
                 } else {
-                  clearErrors('jobRole');
-                  clearErrors('studentField');
+                  clearErrors("jobRole");
+                  clearErrors("studentField");
                 }
 
-                console.log(data);
-                navigation.navigate('Second', data);
+                navigation.navigate("Second", data);
               })}
               style={{
                 marginTop: 10,
@@ -470,14 +492,14 @@ const First = ({ navigation }) => {
 
 const styles = new StyleSheet.create({
   dark: {
-    backgroundColor: '#282D33',
+    backgroundColor: "#282D33",
     borderWidth: 1,
-    borderColor: '#fafafa50',
+    borderColor: "#fafafa50",
   },
 
   light: {
-    backgroundColor: '#fafafa',
-    shadowColor: 'black',
+    backgroundColor: "#fafafa",
+    shadowColor: "black",
   },
 });
 
