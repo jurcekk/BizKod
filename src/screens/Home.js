@@ -22,23 +22,44 @@ import { AuthContext } from '../provider/AuthProvider';
 import { Image } from 'expo-image';
 import AdCard from '../components/AdCard';
 import FloatingButton from '../components/FloatingButton';
+import { JaccardSimilarity } from '../data/JaccardSimilarity';
 
 export default function ({ navigation }) {
   const { isDarkmode, setTheme } = useTheme();
   const [activeList, setActiveList] = useState('first');
   const [selectedCategory, setSelectedCategory] = useState('Sve');
   const [ads, setAds] = useState([]);
+  const [users, setUsers] = useState([]);
 
-  const { setUser } = useContext(AuthContext);
+
+  const { setUser, userData } = useContext(AuthContext);
+
+  const getUsers = async () => {
+    const response = await fetch(
+      process.env.EXPO_PUBLIC_API_URL + '/getAllUsers'
+    );
+
+    const data = await response.json();
+
+    data.items.forEach((user) => {
+      user.rating = JaccardSimilarity(userData?._doc?.interestCategories, user.interestCategories);
+    });
+
+    data.items.sort((a, b) => (a.rating < b.rating) ? 1 : -1);
+
+
+
+    console.log(data);
+    setUsers(data.items);
+  }
+
 
   const getAds = async () => {
-    console.log('usao');
     const response = await fetch(
       process.env.EXPO_PUBLIC_API_URL + '/getAllAdvertisment'
     );
 
     const data = await response.json();
-    console.log(data.items);
     setAds(data.items);
   };
 
@@ -79,7 +100,7 @@ export default function ({ navigation }) {
         }}
       >
         <TouchableOpacity
-          onPress={() => setActiveList('first')}
+          onPress={() => {setActiveList('first'); getAds();}}
           style={{
             flex: 1,
             flexGrow: 1,
@@ -98,12 +119,12 @@ export default function ({ navigation }) {
               color: activeList !== 'first' ? themeColor.black500 : 'white',
             }}
           >
-            Peronalizovani
+            Iznajmiti
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => setActiveList('second')}
+          onPress={() => {setActiveList('second'); getUsers();}}
           style={{
             flex: 1,
             flexGrow: 1,
@@ -121,7 +142,7 @@ export default function ({ navigation }) {
               color: activeList !== 'second' ? themeColor.black500 : 'white',
             }}
           >
-            Svi oglasi
+            Cimeri
           </Text>
         </TouchableOpacity>
       </View>
@@ -167,7 +188,7 @@ export default function ({ navigation }) {
               </TouchableOpacity>
             ))}
           </ScrollView>
-          {ads.length > 0 ? (
+          {ads.length > 0 && activeList === 'first' ? (
           <FlatList
             data={ads}
             keyExtractor={(item) => item._id}
@@ -180,11 +201,26 @@ export default function ({ navigation }) {
               paddingBottom: 200,
             }}
             renderItem={({ item }) => {
-              console.log(item)
               return <AdCard  item={item} />;
             }}
           />
-          ) : 
+          ) : users.length > 0 && activeList === 'second' ? (
+            <FlatList
+            data={users}
+            keyExtractor={(item) => item._id}
+            showsVerticalScrollIndicator={false}
+            style={{
+              marginTop: 20,
+            }}
+            contentContainerStyle={{
+              flexGrow: 1,
+              paddingBottom: 200,
+            }}
+            renderItem={({ item }) => {
+              return <AdCard  item={item} />;
+            }}
+          />
+          ) :
           <Text
             style={{
               textAlign: 'center',
@@ -195,6 +231,7 @@ export default function ({ navigation }) {
             Nema pronađenih oglasa
           </Text>
           }
+
 
         </SectionContent>
       </Section>

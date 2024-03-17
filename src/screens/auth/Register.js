@@ -52,6 +52,7 @@ export default function ({ navigation }) {
         console.log('response', response);
         setUser(true);
         setUserData(response.data);
+        navigation.navigate("First")
       } else {
         Toast.show({
           type: 'error',
@@ -118,23 +119,7 @@ export default function ({ navigation }) {
             >
               Register
             </Text>
-            <Text
-              style={{
-                marginBottom: 5,
-              }}
-            >
-              FirstName
-            </Text>
-            <InputField
-              control={control}
-              errors={errors}
-              label='First Name'
-              name='firstName'
-              defaultValue=''
-              rules={{
-                required: 'FirstName je obavezan',
-              }}
-            />
+            
             <Text
               style={{
                 marginBottom: 5,

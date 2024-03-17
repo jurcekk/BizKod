@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import {
@@ -14,8 +14,13 @@ import {
 import { Image } from 'expo-image';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 
+import { AuthContext } from '../provider/AuthProvider';
+
+
 const Profile = ({ navigation }) => {
   const { isDarkmode, setTheme } = useTheme();
+  const {userData} = useContext(AuthContext);
+  console.log("USER", JSON.stringify(userData._doc.firstName, null, 2));
   return (
     <Layout>
     <ScrollView style={styles.container}>
@@ -46,24 +51,16 @@ const Profile = ({ navigation }) => {
           style={styles.profileImage}
           source={require('../../assets/images/forget.png')} // Replace with your local image
         />
-        <Text style={styles.name}>Username</Text>
-        <View style={styles.rating}>
-          <FontAwesome name='star' size={20} color='orange' />
-          <Text style={styles.ratingText}>4,5/5</Text>
-        </View>
+        <Text style={styles.name}>{userData?._doc.firstName} {userData?._doc.lastName}</Text>
+        
 
-        <Text style={styles.email}>email@email.com</Text>
-        <Text style={styles.phone}>+3817223626</Text>
+        <Text style={styles.email}>{userData._doc.email}</Text>
+        <Text style={styles.phone}>{userData._doc.phoneNumber}</Text>
         <View style={styles.course}>
-          <Text style={[styles.courseText, {color: isDarkmode ? "white" : "white"}]}>Oblast poslovanja</Text>
-          <Text style={[styles.courseText, {color: isDarkmode ? "white" : "white"}]}>Informacione Tehnologije</Text>
+          <Text style={[styles.courseText, {color: isDarkmode ? "white" : "white"}]}>{userData._doc.profession}</Text>
+          <Text style={[styles.courseText, {color: isDarkmode ? "white" : "white"}]}>{userData._doc.area}</Text>
         </View>
       </View>
-
-
-      <Button text='Kontaktiraj'
-          style={{ marginTop: 10, marginHorizontal: 20, borderRadius: 20 }}
-          onPress={() => {}} />
         
     </ScrollView>
     </Layout>
