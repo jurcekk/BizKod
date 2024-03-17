@@ -14,7 +14,7 @@ import {
 import { Image } from 'expo-image';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 
-const Profile = ({ navigation }) => {
+const OtherProfile = ({ navigation }) => {
   const { isDarkmode, setTheme } = useTheme();
   return (
     <Layout>
@@ -145,4 +145,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Profile;
+export default OtherProfile;

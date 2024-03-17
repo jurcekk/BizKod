@@ -6,7 +6,6 @@ import {
   KeyboardAvoidingView,
   Image,
 } from 'react-native';
-import { getAuth, sendPasswordResetEmail } from 'firebase/auth';
 import {
   Layout,
   Text,
@@ -17,7 +16,6 @@ import {
 } from 'react-native-rapi-ui';
 import { useForm } from 'react-hook-form';
 import InputField from '../../components/InputField';
-import { FIREBASE_AUTH } from '../../FirebaseInit';
 import Toast from 'react-native-toast-message';
 
 export default function ({ navigation }) {
@@ -35,25 +33,7 @@ export default function ({ navigation }) {
     },
   });
 
-  async function forget(data) {
-    setLoading(true);
-    await sendPasswordResetEmail(auth, data.email)
-      .then(function () {
-        setLoading(false);
-        navigation.navigate('Login');
-        Toast.show({
-          type: 'success',
-          position: 'top',
-          topOffset: 60,
-          text1: 'Email sent',
-          text2: 'We have sent you a password reset email.',
-        });
-      })
-      .catch(function (error) {
-        setLoading(false);
-        alert(error);
-      });
-  }
+  
   return (
     <KeyboardAvoidingView behavior='height' enabled style={{ flex: 1 }}>
       <Layout>
@@ -121,7 +101,7 @@ export default function ({ navigation }) {
             />
             <Button
               text={loading ? 'Loading' : 'Send email'}
-              onPress={handleSubmit(forget)}
+              onPress={() => console.log('Send email')}
               style={{
                 marginTop: 20,
               }}
